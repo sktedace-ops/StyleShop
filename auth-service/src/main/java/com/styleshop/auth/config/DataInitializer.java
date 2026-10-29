@@ -1,0 +1,3 @@
+package com.styleshop.auth.config;
+import com.styleshop.auth.model.User; import com.styleshop.auth.repository.UserRepository; import org.springframework.boot.CommandLineRunner; import org.springframework.context.annotation.*; import org.springframework.security.crypto.password.PasswordEncoder;
+@Configuration public class DataInitializer { @Bean CommandLineRunner users(UserRepository r,PasswordEncoder p){return a->{create(r,p,"admin","admin123","ADMIN");create(r,p,"user","user123","USER");create(r,p,"abc123","abc123","USER");};} private void create(UserRepository r,PasswordEncoder p,String n,String pw,String role){if(r.findByUsername(n).isEmpty()){User u=new User();u.setUsername(n);u.setPassword(p.encode(pw));u.setRole(role);r.save(u);}} }

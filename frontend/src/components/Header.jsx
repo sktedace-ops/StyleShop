@@ -1,5 +1,5 @@
 import {Link,useNavigate} from "react-router-dom";
-import {request} from "../api";
+import {request,setAccessToken,downloadBase64Pdf} from "../api";
 
 export default function Header({auth,onAuthChange}){
   const nav=useNavigate();
@@ -11,9 +11,18 @@ export default function Header({auth,onAuthChange}){
   }
 
   async function logout(){
-    await request("/api/auth/logout",{method:"POST"});
+    try{await request("/api/auth/logout",{method:"POST"})}catch{}
+    setAccessToken("");
     await onAuthChange();
-    nav("/");
+    nav("/login",{replace:true});
+  }
+
+  async function exportPdf(path){
+    try{
+      await downloadBase64Pdf(path);
+    }catch(error){
+      alert(error.message || "PDF 匯出失敗");
+    }
   }
 
   return <>
@@ -34,9 +43,10 @@ export default function Header({auth,onAuthChange}){
       <a href="/" onClick={goHome}>首頁</a>
       <Link to="/admin/products">商品管理</Link>
       <Link to="/admin/categories">種類管理</Link>
-      <a href="http://localhost:8080/api/reports/test.pdf" target="_blank" rel="noreferrer">PDF 測試報表</a>
-      <a href="http://localhost:8080/api/reports/login-history.pdf" target="_blank" rel="noreferrer">登入紀錄 PDF</a>
-      <a href="http://localhost:8080/api/reports/products.pdf" target="_blank" rel="noreferrer">商品清單 PDF</a>
+      <button className="linkbtn" onClick={()=>exportPdf("/api/reports/login-history/base64?lang=zh-TW")}>登入紀錄 中文 PDF</button>
+      <button className="linkbtn" onClick={()=>exportPdf("/api/reports/login-history/base64?lang=en")}>Login History EN</button>
+      <button className="linkbtn" onClick={()=>exportPdf("/api/reports/products/base64?lang=zh-TW")}>商品清單 中文 PDF</button>
+      <button className="linkbtn" onClick={()=>exportPdf("/api/reports/products/base64?lang=en")}>Products EN</button>
     </div>}
   </>;
 }

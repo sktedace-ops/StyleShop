@@ -1,0 +1,18 @@
+server:
+  port: 8082
+spring:
+  application.name: product-service
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:styleshop_product}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Taipei&characterEncoding=UTF-8
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:1234}
+  jpa:
+    hibernate.ddl-auto: update
+    open-in-view: false
+  security.oauth2.resourceserver.jwt.jwk-set-uri: http://localhost:8081/api/auth/.well-known/jwks.json
+styleshop:
+  product-dao: mybatis
+mybatis:
+  mapper-locations: classpath:mappers/*.xml
+  type-aliases-package: com.styleshop.product.model
+  configuration.map-underscore-to-camel-case: true

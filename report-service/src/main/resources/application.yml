@@ -1,0 +1,5 @@
+server:
+  port: 8084
+spring:
+  application.name: report-service
+  security.oauth2.resourceserver.jwt.jwk-set-uri: http://localhost:8081/api/auth/.well-known/jwks.json

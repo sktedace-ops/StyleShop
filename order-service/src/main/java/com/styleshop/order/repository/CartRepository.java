@@ -1,0 +1,1 @@
+package com.styleshop.order.repository;import com.styleshop.order.model.CartItem;import org.springframework.data.jpa.repository.JpaRepository;import java.util.*;public interface CartRepository extends JpaRepository<CartItem,Long>{List<CartItem> findByUsernameOrderById(String u);Optional<CartItem> findByUsernameAndProductId(String u,Long p);void deleteByUsername(String u);}

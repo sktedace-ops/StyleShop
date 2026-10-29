@@ -1,37 +1,32 @@
-# Java / Maven
-target/
-*.class
-*.jar
-*.war
-
-# IDE
-.vscode/
+**/target/
+frontend/node_modules/
+frontend/dist/
 .idea/
-*.iml
+.classpath
+.project
+.settings/
+*.log
+.env
 
-# Node.js / Frontend
-node_modules/
-dist/
-build/
-coverage/
+# Environment variables
+.env.*
+!.env.example
+
+# Local configurations
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# Secrets
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Logs
 *.log
 *error*.txt
+*debug*.txt
 
-# Secrets
-.env
-.env.*
-!.env.example
-application-local.properties
-application-local.yml
-application-local.yaml
-*.pem
-*.key
-
-# OS
-.DS_Store
-Thumbs.db
-
-startup-debug.txt
-git-preview.txt
+# Editor
+.vscode/

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.styleshop.product.mapper.ProductMapper">
+ <resultMap id="productMap" type="Product"><id property="id" column="id"/><result property="name" column="name"/><result property="price" column="price"/><result property="description" column="description"/><result property="imageUrl" column="image_url"/><result property="productUrl" column="product_url"/><association property="category" javaType="Category"><id property="id" column="category_id"/><result property="name" column="category_name"/></association></resultMap>
+ <sql id="where"><where><if test="keyword != null and keyword != ''">AND (LOWER(p.name) LIKE CONCAT('%',LOWER(#{keyword}),'%') OR LOWER(p.description) LIKE CONCAT('%',LOWER(#{keyword}),'%'))</if><if test="categoryId != null">AND p.category_id=#{categoryId}</if><if test="minPrice != null">AND p.price &gt;= #{minPrice}</if><if test="maxPrice != null">AND p.price &lt;= #{maxPrice}</if></where></sql>
+ <select id="search" resultMap="productMap">SELECT p.*,c.name category_name FROM products p LEFT JOIN categories c ON c.id=p.category_id <include refid="where"/> ORDER BY <choose><when test="sortBy == 'name'">p.name</when><when test="sortBy == 'price'">p.price</when><otherwise>p.id</otherwise></choose> <choose><when test="direction == 'DESC'">DESC</when><otherwise>ASC</otherwise></choose> LIMIT #{limit} OFFSET #{offset}</select>
+ <select id="count" resultType="long">SELECT COUNT(*) FROM products p <include refid="where"/></select>
+ <select id="findById" resultMap="productMap">SELECT p.*,c.name category_name FROM products p LEFT JOIN categories c ON c.id=p.category_id WHERE p.id=#{id}</select>
+ <insert id="insert" useGeneratedKeys="true" keyProperty="id">INSERT INTO products(name,price,description,image_url,product_url,category_id) VALUES(#{name},#{price},#{description},#{imageUrl},#{productUrl},<choose><when test="category != null">#{category.id}</when><otherwise>NULL</otherwise></choose>)</insert>
+ <update id="update">UPDATE products SET name=#{name},price=#{price},description=#{description},image_url=#{imageUrl},product_url=#{productUrl},category_id=<choose><when test="category != null">#{category.id}</when><otherwise>NULL</otherwise></choose> WHERE id=#{id}</update>
+ <delete id="deleteById">DELETE FROM products WHERE id=#{id}</delete>
+</mapper>

@@ -1,6 +1,6 @@
 import {useEffect,useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {request} from "../api";
+import {request,setAccessToken} from "../api";
 import PageActions from "../components/PageActions";
 
 export default function Login({onLogin}){
@@ -39,10 +39,11 @@ export default function Login({onLogin}){
     }
     try{
       setMsg("");
-      await request("/api/auth/login",{
+      const data=await request("/api/auth/login",{
         method:"POST",
         body:JSON.stringify(form)
       });
+      setAccessToken(data.accessToken);
       await onLogin();
       nav("/");
     }catch(e){

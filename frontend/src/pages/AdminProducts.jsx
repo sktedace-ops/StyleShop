@@ -1,6 +1,6 @@
 import {useEffect,useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {request,imageUrl} from "../api";
+import {request,imageUrl,downloadBase64Pdf} from "../api";
 import PageActions from "../components/PageActions";
 
 const empty={id:null,name:"",price:"",imageUrl:"",productUrl:"",description:"",categoryId:""};
@@ -13,16 +13,25 @@ export default function AdminProducts(){
   const [msg,setMsg]=useState("");
   const [error,setError]=useState("");
   const [loading,setLoading]=useState(true);
+  const [filters,setFilters]=useState({keyword:"",categoryId:"",minPrice:"",maxPrice:"",sortBy:"id",direction:"asc"});
+  const [applied,setApplied]=useState(filters);
+  const [page,setPage]=useState(0);
+  const [meta,setMeta]=useState({totalElements:0,totalPages:0,dao:""});
+  const [importFile,setImportFile]=useState(null);
+  const [importing,setImporting]=useState(false);
 
   async function load(){
     try{
       setLoading(true);
       setError("");
+      const query=new URLSearchParams({page:String(page),size:"8",sortBy:applied.sortBy,direction:applied.direction});
+      Object.entries(applied).forEach(([key,value])=>{if(value!==""&&!['sortBy','direction'].includes(key))query.set(key,value)});
       const [p,c]=await Promise.all([
-        request("/api/admin/products"),
+        request(`/api/admin/products?${query}`),
         request("/api/categories")
       ]);
-      setProducts(Array.isArray(p)?p:[]);
+      setProducts(Array.isArray(p.content)?p.content:[]);
+      setMeta({totalElements:p.totalElements||0,totalPages:p.totalPages||0,dao:p.dao||""});
       setCategories(Array.isArray(c)?c:[]);
     }catch(e){
       if(e.status===401) nav("/login");
@@ -32,7 +41,67 @@ export default function AdminProducts(){
     }
   }
 
-  useEffect(()=>{load()},[]);
+  useEffect(()=>{load()},[page,applied]);
+
+  function search(e){
+    e.preventDefault();
+    setPage(0);
+    setApplied({...filters});
+  }
+
+  function resetSearch(){
+    const clean={keyword:"",categoryId:"",minPrice:"",maxPrice:"",sortBy:"id",direction:"asc"};
+    setFilters(clean); setPage(0); setApplied(clean);
+  }
+
+  function fileAsBase64(file){
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(String(reader.result||""));
+      reader.onerror=()=>reject(new Error("檔案讀取失敗"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function importCsv(){
+    if(!importFile){setError("請先選擇 CSV、Excel 或 PDF 檔案");return}
+    setMsg("");
+    setError("");
+    setImporting(true);
+    try{
+      const base64=await fileAsBase64(importFile);
+      const result=await request("/api/admin/products/import/base64",{
+        method:"POST",
+        body:JSON.stringify({fileName:importFile.name,base64})
+      });
+      setMsg(`${importFile.name} 解析 ${result.parsedCount} 筆，成功寫入 ${result.savedCount} 筆；${result.transactionStatus}（${result.dao}）`);
+      setImportFile(null);
+      document.getElementById("product-csv-file").value="";
+      setPage(0);
+      await load();
+    }catch(e){
+      setError(e.message||"檔案匯入失敗，整批資料已 Rollback");
+    }finally{
+      setImporting(false);
+    }
+  }
+
+  function downloadCsvExample(){
+    const csv='name,price,description,imageUrl,productUrl,categoryId\n'+
+      '批次商品A,880,Base64 CSV匯入測試,/images/tshirt.svg,,1\n'+
+      '批次商品B,1280,"含逗號, 也能正確解析",/images/running-shoes.svg,,2\n';
+    const url=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}));
+    const link=document.createElement("a");
+    link.href=url;
+    link.download="products-import-example.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function exportPdf(path){
+    try{setError("");await downloadBase64Pdf(path)}
+    catch(e){setError(e.message||"PDF 匯出失敗")}
+  }
 
   async function save(e){
     e.preventDefault();
@@ -88,17 +157,54 @@ export default function AdminProducts(){
     <div className="heading">
       <div>
         <h1>商品管理</h1>
-        <p>使用 MyBatis Mapper XML 新增、修改、查詢與移除商品</p>
+        <p>可切換 JPA／MyBatis DAO，支援條件查詢、Pageable 分頁與 Base64 PDF</p>
       </div>
-      <span>共 {products.length} 項商品</span>
+      <span>DAO：{meta.dao||"-"}　共 {meta.totalElements} 項商品</span>
     </div>
 
     <div className="report-actions">
-      <a className="report-button" href="http://localhost:8080/api/reports/products.pdf"
-        target="_blank" rel="noreferrer">📄 商品清單 PDF</a>
-      <a className="report-button" href="http://localhost:8080/api/reports/login-history.pdf"
-        target="_blank" rel="noreferrer">🔐 登入紀錄管理</a>
+      <button className="report-button" onClick={()=>exportPdf("/api/reports/products/base64?lang=zh-TW")}>📄 商品清單（中文 PDF）</button>
+      <button className="report-button secondary-report" onClick={()=>exportPdf("/api/reports/products/base64?lang=en")}>📄 Products (English PDF)</button>
+      <button className="report-button" onClick={()=>exportPdf("/api/reports/login-history/base64?lang=zh-TW")}>🔐 登入紀錄（中文 PDF）</button>
+      <button className="report-button secondary-report" onClick={()=>exportPdf("/api/reports/login-history/base64?lang=en")}>🔐 Login History (English PDF)</button>
+      <button className="report-button" onClick={()=>exportPdf("/api/reports/orders/base64?lang=zh-TW")}>🧾 訂單紀錄（中文 PDF）</button>
+      <button className="report-button secondary-report" onClick={()=>exportPdf("/api/reports/orders/base64?lang=en")}>🧾 Orders (English PDF)</button>
     </div>
+
+    <section className="panel import-panel">
+      <div>
+        <h2>Base64 批次匯入商品</h2>
+        <p>支援 CSV、Excel (.xlsx/.xls) 與文字型 PDF；後端解析成 Collection，全部成功才 Commit，任一列失敗即整批 Rollback。</p>
+      </div>
+      <input id="product-csv-file" type="file"
+        accept=".csv,.xlsx,.xls,.pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/pdf"
+        onChange={e=>setImportFile(e.target.files?.[0]||null)}/>
+      <button type="button" onClick={downloadCsvExample}>下載欄位範例</button>
+      <button className="primary" type="button" disabled={importing} onClick={importCsv}>
+        {importing?"匯入中...":"上傳並匯入"}
+      </button>
+    </section>
+
+    <form className="panel search-panel" onSubmit={search}>
+      <input placeholder="查詢商品名稱或描述" value={filters.keyword}
+        onChange={e=>setFilters({...filters,keyword:e.target.value})}/>
+      <select value={filters.categoryId} onChange={e=>setFilters({...filters,categoryId:e.target.value})}>
+        <option value="">全部種類</option>
+        {categories.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+      </select>
+      <input type="number" min="0" placeholder="最低價格" value={filters.minPrice}
+        onChange={e=>setFilters({...filters,minPrice:e.target.value})}/>
+      <input type="number" min="0" placeholder="最高價格" value={filters.maxPrice}
+        onChange={e=>setFilters({...filters,maxPrice:e.target.value})}/>
+      <select value={filters.sortBy} onChange={e=>setFilters({...filters,sortBy:e.target.value})}>
+        <option value="id">商品編號</option><option value="name">商品名稱</option><option value="price">價格</option>
+      </select>
+      <select value={filters.direction} onChange={e=>setFilters({...filters,direction:e.target.value})}>
+        <option value="asc">由小到大</option><option value="desc">由大到小</option>
+      </select>
+      <button className="primary" type="submit">查詢</button>
+      <button type="button" onClick={resetSearch}>清除</button>
+    </form>
 
     {msg&&<p className="success-msg">{msg}</p>}
     {error&&<p className="error">{error}</p>}
@@ -155,7 +261,7 @@ export default function AdminProducts(){
         }
 
         {!loading&&products.length>0&&
-          <div className="adminproducts">
+          <><div className="adminproducts">
             {products.map(p=>{
               const price=Number(p.price||0);
               return <div className="adminproduct" key={p.id}>
@@ -170,6 +276,12 @@ export default function AdminProducts(){
               </div>
             })}
           </div>
+          <nav className="pagination" aria-label="商品換頁">
+            <button disabled={page===0} onClick={()=>setPage(p=>p-1)}>上一頁</button>
+            {Array.from({length:meta.totalPages},(_,i)=>i).map(i=><button key={i}
+              className={i===page?"active":""} onClick={()=>setPage(i)}>{i+1}</button>)}
+            <button disabled={page+1>=meta.totalPages} onClick={()=>setPage(p=>p+1)}>下一頁</button>
+          </nav></>
         }
       </section>
     </div>

@@ -1,0 +1,3 @@
+package com.styleshop.auth.model;
+import jakarta.persistence.*; import java.time.LocalDateTime;
+@Entity @Table(name="login_logs") public class LoginLog { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id; private String username; private LocalDateTime loginTime; private String status; private String message; public Long getId(){return id;} public String getUsername(){return username;} public void setUsername(String v){username=v;} public LocalDateTime getLoginTime(){return loginTime;} public void setLoginTime(LocalDateTime v){loginTime=v;} public String getStatus(){return status;} public void setStatus(String v){status=v;} public String getMessage(){return message;} public void setMessage(String v){message=v;} }

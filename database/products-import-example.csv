@@ -1,0 +1,3 @@
+name,price,description,imageUrl,productUrl,categoryId
+批次商品A,880,Base64 CSV匯入測試,/images/tshirt.svg,,1
+批次商品B,1280,"含逗號, 也能正確解析",/images/running-shoes.svg,,2

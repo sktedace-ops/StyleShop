@@ -1,0 +1,33 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173"
+            allowedMethods: [GET, POST, PUT, DELETE, OPTIONS]
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**,/internal/auth/**
+        - id: product-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/products/**,/api/categories/**,/api/admin/**,/images/**
+        - id: order-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/cart/**,/api/orders/**
+        - id: report-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/reports/**
+management:
+  endpoints.web.exposure.include: health,info

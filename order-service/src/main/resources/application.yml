@@ -1,0 +1,12 @@
+server:
+  port: 8083
+spring:
+  application.name: order-service
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:styleshop_order}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Taipei&characterEncoding=UTF-8
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:1234}
+  jpa:
+    hibernate.ddl-auto: update
+    open-in-view: false
+  security.oauth2.resourceserver.jwt.jwk-set-uri: http://localhost:8081/api/auth/.well-known/jwks.json

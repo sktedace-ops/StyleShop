@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fontFamilies>
+    <fontFamily name="Noto Sans CJK TC">
+        <normal>fonts/NotoSansCJKtc-Regular.otf</normal>
+        <bold>fonts/NotoSansCJKtc-Regular.otf</bold>
+        <italic>fonts/NotoSansCJKtc-Regular.otf</italic>
+        <boldItalic>fonts/NotoSansCJKtc-Regular.otf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Noto Sans TC', 'Microsoft JhengHei', sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+</fontFamilies>

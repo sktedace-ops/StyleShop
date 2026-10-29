@@ -4,6 +4,9 @@ import {request} from "../api";
 import PageActions from "../components/PageActions";
 
 function money(v){ return Number(v||0).toLocaleString("zh-TW"); }
+function isCancelled(status){ return status==="CANCELLED" || status==="已取消"; }
+function statusText(status){ return isCancelled(status)?"已取消":status==="CREATED"?"訂單成立":status; }
+function totalQuantity(order){ return (order.items||[]).reduce((sum,item)=>sum+Number(item.quantity||0),0); }
 
 export default function Orders(){
   const [orders,setOrders]=useState([]);
@@ -20,11 +23,11 @@ export default function Orders(){
   },[]);
 
   const activeOrders=useMemo(
-    ()=>orders.filter(o=>o.status!=="已取消"),
+    ()=>orders.filter(o=>!isCancelled(o.status)),
     [orders]
   );
   const cancelledOrders=useMemo(
-    ()=>orders.filter(o=>o.status==="已取消"),
+    ()=>orders.filter(o=>isCancelled(o.status)),
     [orders]
   );
   const visibleOrders=tab==="cancelled"?cancelledOrders:activeOrders;
@@ -73,19 +76,19 @@ export default function Orders(){
       <div className="orders">
         {visibleOrders.map(o=>
           <Link
-            className={`ordercard order-summary-list-card ${o.status==="已取消"?"cancelled-order-card":""}`}
+            className={`ordercard order-summary-list-card ${isCancelled(o.status)?"cancelled-order-card":""}`}
             to={`/orders/${o.id}`}
             key={o.id}
           >
             <div>
               <b className="order-number">訂單 #{o.id}</b>
               <p className="muted">{new Date(o.createdAt).toLocaleString("zh-TW")}</p>
-              <span className={o.status==="已取消"?"status-badge cancelled":"status-badge"}>
-                {o.status}
+              <span className={isCancelled(o.status)?"status-badge cancelled":"status-badge"}>
+                {statusText(o.status)}
               </span>
             </div>
             <div className="ordercard-values">
-              <span>商品 {Number(o.totalQuantity||0)} 件</span>
+              <span>商品 {totalQuantity(o)} 件</span>
               <span>商品小計 NT$ {money(o.subtotal ?? o.totalAmount)}</span>
               <strong>實付 NT$ {money(o.finalAmount ?? o.totalAmount)}</strong>
             </div>

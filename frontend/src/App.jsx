@@ -13,7 +13,9 @@ import AdminCategories from "./pages/AdminCategories";
 
 export default function App(){
   const [auth,setAuth]=useState({loggedIn:false,username:"",role:""});
-  const refreshAuth=()=>request("/api/auth/me").then(setAuth).catch(()=>{});
+  const refreshAuth=()=>request("/api/auth/me")
+    .then(setAuth)
+    .catch(()=>setAuth({loggedIn:false,username:"",role:""}));
   useEffect(()=>{refreshAuth()},[]);
   return <><Header auth={auth} onAuthChange={refreshAuth}/>
     <Routes>

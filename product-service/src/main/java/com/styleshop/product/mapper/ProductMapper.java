@@ -1,0 +1,3 @@
+package com.styleshop.product.mapper;
+import com.styleshop.product.model.Product; import org.apache.ibatis.annotations.*; import java.math.BigDecimal; import java.util.List;
+public interface ProductMapper {List<Product> search(@Param("keyword")String keyword,@Param("categoryId")Long categoryId,@Param("minPrice")BigDecimal minPrice,@Param("maxPrice")BigDecimal maxPrice,@Param("sortBy")String sortBy,@Param("direction")String direction,@Param("limit")int limit,@Param("offset")long offset);long count(@Param("keyword")String keyword,@Param("categoryId")Long categoryId,@Param("minPrice")BigDecimal minPrice,@Param("maxPrice")BigDecimal maxPrice);Product findById(Long id);int insert(Product p);int update(Product p);int deleteById(Long id);}
