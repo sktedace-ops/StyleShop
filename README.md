@@ -1,261 +1,176 @@
-# VSCodeShop
+# StyleShop｜Java Spring Boot 商品商城專題
+
+> 個人學習與作品展示專案，重點在 Java Web 後端、資料庫存取、前後端串接及報表功能。本專案不是正式營運的購物網站。
+
+[![Java](https://img.shields.io/badge/Java-17%2F21-orange)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-green)](https://spring.io/projects/spring-boot)
+[![React](https://img.shields.io/badge/React-Vite-blue)](https://react.dev/)
+[![MySQL](https://img.shields.io/badge/Database-MySQL-blue)](https://www.mysql.com/)
+
+## 專題介紹
+
+StyleShop 是以 **Java Spring Boot** 為核心的商品商城練習專題，整合 **React + Vite** 前端、Spring MVC / Thymeleaf、**MyBatis / JPA**、**MySQL** 與 **JasperReports**。透過商品管理、會員登入、購物車、訂單與 PDF 報表等情境，練習完整的網站資料處理流程。
+
+**原始碼：** https://github.com/sktedace-ops/StyleShop
+
+## 主要功能
+
+- **會員系統：** 登入、登出、登入紀錄及測試帳號。
+- **商品與分類：** 商品列表、商品明細、分類篩選與商品維護。
+- **購物車：** 加入商品、調整數量、清空購物車。
+- **訂單：** 建立訂單、查看訂單與取消訂單。
+- **管理功能：** 商品及種類管理。
+- **PDF 報表：** 使用 JasperReports 匯出商品清單與登入紀錄。
 
-## 功能
-- 需要登入才能進商品清單頁
-- Controller → Service → Repository
-- 前端使用 fetch 呼叫 API
-- MySQL + Spring Data JPA
-- Spring Boot 自動建立資料表
-- 第一次啟動自動建立 admin 帳號與 3 筆商品
+> 功能依專案既有文件整理；不同前端頁面可能提供不同操作入口，請以實際執行結果為準。
 
-## 需要安裝
-- JDK 17
-- Visual Studio Code
-- Extension Pack for Java
-- Spring Boot Extension Pack
-- MySQL Server
+## 使用技術
 
-## 啟動前
-修改：
-`src/main/resources/application.properties`
+| 類別 | 技術 | 用途 |
+| --- | --- | --- |
+| 後端 | Java、Spring Boot 3.3.5、Spring MVC | API 與網站邏輯 |
+| 前端 | React、Vite、JavaScript | 互動介面與 API 串接 |
+| 伺服器端頁面 | Thymeleaf | Spring MVC 頁面 |
+| 資料存取 | MyBatis、Mapper XML、JPA | 資料查詢及持久化 |
+| 資料庫 | MySQL | 儲存會員、商品、訂單等資料 |
+| 報表 | JasperReports 7.0.1 | PDF 報表 |
+| 建置 | Maven | Java 依賴與啟動 |
+| 開發工具 | VS Code、Git、GitHub | 開發及版本管理 |
 
-把：
-`spring.datasource.password=你的MySQL密碼`
+## 系統架構與資料流程
 
-改成你的 MySQL root 密碼。
+```text
+使用者瀏覽器
+  ├─ React + Vite (開發環境通常為 localhost:5173)
+  │    └─ fetch / HTTP / JSON
+  │         └─ Spring Boot REST API (localhost:8080)
+  └─ Spring MVC + Thymeleaf (localhost:8080)
+                │
+           Controller
+                │
+             Service
+                │
+           Repository / DAO
+                │
+          MyBatis / JPA
+                │
+              MySQL
 
-## 啟動
-VS Code 開啟這個資料夾後，可在 Terminal 執行：
+報表：Controller → JasperReportService → 資料查詢 → JasperReports → PDF
+```
 
-`mvn spring-boot:run`
+專案採分層設計，將請求處理、商業邏輯與資料庫操作分離，以便理解、維護及擴充。
 
-或直接執行：
-`VscodeShopApplication.java`
+## 專案目錄
 
-## 網址
-http://localhost:8080
+```text
+StyleShop/
+├─ frontend/                  # React 前端
+├─ src/
+│  └─ main/
+│     ├─ java/
+│     │  └─ com/example/vscodeshop/
+│     │     ├─ controller/   # 控制器 / API
+│     │     ├─ config/       # Spring 設定
+│     │     └─ ...           # 其他後端模組
+│     └─ resources/
+│        ├─ application.properties
+│        └─ mappers/         # MyBatis SQL XML
+├─ pom.xml                    # Maven 設定
+├─ .gitignore
+└─ README.md
+```
 
-## 測試帳號
-- 管理員：admin / admin123（可管理商品、分類與報表）
-- 一般會員：user / user123（只能購物、使用購物車與自己的訂單）
-- 一般會員：abc123 / abc123（只能購物、使用購物車與自己的訂單）
+> 此處為重點目錄示意，完整類別與路徑以 GitHub 原始碼為準。
 
-## 會員與管理員權限
+## 本機啟動
 
-- `USER`：可瀏覽商品、查看商品內容、使用自己的購物車、建立及查看自己的訂單。
-- `ADMIN`：包含會員功能，並可新增、修改、移除商品、管理種類及查看 PDF 報表。
-- 一般會員登入後，首頁不會顯示商品管理、種類管理、登記商品、移除商品與管理報表。
-- 後端會再次驗證 `ADMIN` 角色；一般會員直接輸入管理網址或呼叫 `/api/admin/**`、`/api/reports/**` 會被拒絕。
-- 密碼使用 BCrypt 雜湊儲存，不以明文比對。
-- 商品管理頁提供「商品清單 PDF」與「登入紀錄管理」按鈕，僅限管理員使用。
+### 1. 準備環境
 
-## 程式流程
-登入：
-login.html → LoginController → LoginService → UserRepository → MySQL
+- JDK 17 或 21
+- Maven
+- MySQL
+- Node.js 與 npm（執行 React 前端時）
 
-商品清單：
-list.html → fetch("/api/products") → ProductController → ProductService → ProductRepository → MySQL → JSON → 前端
+### 2. 設定 MySQL
 
-## 圖片與連結欄位
+建立專案所需的資料庫，並確認 `src/main/resources/application.properties` 的連線資訊符合本機環境。範例：
 
-Product 已新增：
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/company_shop?createDatabaseIfNotExist=true
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD}
+server.port=8080
+```
 
-- imageUrl：商品圖片路徑或網址
-- productUrl：商品連結
+上方是設定範例，實際連線參數請依現有專案檔案調整。不要將真實密碼寫進 GitHub。
 
-範例：
+在 **PowerShell** 中設定目前工作階段的資料庫密碼：
 
-imageUrl = "/images/tshirt.svg"
-productUrl = "https://example.com/tshirt"
+```powershell
+$env:DB_PASSWORD = Read-Host "請輸入本機 MySQL 密碼"
+```
 
-前端 list.html 會從 API 回傳的 JSON 自動顯示圖片與「查看商品」連結。
+### 3. 啟動 Spring Boot 後端
 
+在專案根目錄執行：
 
-## 登入後才能查看商品頁
+```powershell
+mvn spring-boot:run
+```
 
-新版流程：
+若看到 `Tomcat started on port 8080` 和 `Started VscodeShopApplication`，代表後端已啟動。瀏覽 http://localhost:8080 。
 
-1. `/` 商品清單可直接瀏覽。
-2. 使用者點擊「查看商品」會前往 `/product/{id}`。
-3. `ProductPageController` 檢查 Session 是否存在 `loginUser`。
-4. 未登入時，將商品 ID 暫存在 Session，並導向 `/login-page?required=1`。
-5. 登入畫面會顯示「請先登入會員，登入後即可查看商品內容」。
-6. 登入成功後，自動回到原本想查看的商品頁。
-7. 已登入使用者可以直接查看商品詳細資料。
+### 4. 啟動 React 前端
 
-測試帳號：
-- 帳號：admin
-- 密碼：admin123
+開啟另一個終端機：
 
+```powershell
+cd frontend
+npm install
+npm run dev
+```
 
-## 公開商品外觀 / 登入後查看詳細內容
+依終端機顯示的網址開啟前端（通常為 http://localhost:5173）。請確認前端 API 設定指向本機 Spring Boot 服務。
 
-目前權限設計：
+> **注意：** GitHub 儲存庫展示的是原始碼，不會自動將 Spring Boot + MySQL 網站部署上線。若希望別人直接操作網站，需要另外部署後端、前端與資料庫。
 
-- 未登入：
-  - 可查看商品圖片
-  - 可查看商品名稱
-  - 可查看商品價格
-  - 不可查看商品詳細介紹
-  - 不可取得商品完整連結
-- 點擊「查看商品內容」時，如果未登入，會跳到登入頁。
-- 登入成功後會自動回到原本點擊的商品詳細頁。
-- 已登入：
-  - 可查看完整商品圖片、名稱、價格
-  - 可查看商品詳細介紹
-  - 可使用商品連結
-
-另外 `/api/products` 公開 API 僅回傳 id、name、price、imageUrl，
-避免未登入使用者直接從 API 讀取 description 或 productUrl。
-
-
-## 商品與種類管理功能
-
-新增管理功能：
-
-- `/admin/products` 商品管理
-  - 新增商品
-  - 修改商品
-  - 刪除商品
-  - 指定商品種類
-- `/admin/categories` 商品種類管理
-  - 新增種類
-  - 修改種類名稱
-  - 刪除未被商品使用的種類
+## 畫面展示
 
-權限：
-- 商品首頁與商品外觀：公開
-- 商品詳細介紹：需登入
-- 商品新增 / 修改 / 刪除：需登入
-- 商品種類新增 / 修改 / 刪除：需登入
+請在實際截圖後新增圖片，例如放在 `docs/images/`：
 
-預設種類：
-- 衣服
-- 鞋子
-- 帽子
-- 包包
+| 畫面 | 說明 |
+| --- | --- |
+| 首頁 | 商品列表及分類入口 |
+| 會員登入 | 帳號登入介面 |
+| 購物車 | 商品數量與購物車管理 |
+| 訂單 | 訂單查詢及狀態 |
+| 後台 | 商品及分類管理 |
+| PDF 報表 | JasperReports 匯出結果 |
 
-測試帳號：
-- admin
-- admin123
+<!-- 加入截圖後可取消以下註解：
+![StyleShop 首頁](docs/images/home.png)
+![StyleShop 購物車](docs/images/cart.png)
+-->
 
-
-## 購物車功能
-
-購物車需要登入才能使用。
+## 練習重點
 
-功能：
-- 登入後從商品詳細頁加入購物車
-- 相同商品再次加入時，自動增加數量
-- `/cart` 查看自己的購物車
-- `＋` 增加商品數量
-- `−` 減少商品數量
-- 數量為 1 時再減少會移除該商品
-- 「刪除」可直接移除購物車商品
-- 顯示單價、數量、小計、總金額
-- 每個登入帳號只會看到自己的購物車資料
-- 購物車資料會寫入 MySQL 的 `cart_items` 資料表
-
-未登入進入 `/cart` 或嘗試加入購物車時，會導向登入頁並顯示提示。
-
-
-## 訂單功能
-
-新增登入後才能使用的訂單功能：
-
-- 購物車按「建立訂單」
-- 將購物車內容複製到 `orders` / `order_items`
-- 訂單建立完成後自動清空該會員購物車
-- `/orders` 查看目前登入會員的歷史訂單
-- `/orders/{id}` 查看訂單明細
-- 每筆訂單保存商品名稱、價格、數量、小計與商品圖片
-- 即使之後商品資料被修改，歷史訂單仍保留建立訂單當下的價格與名稱
-- 會員只能查看自己的訂單
-- 未登入不可建立或查看訂單
-
-另外：
-- 商品首頁改為每頁最多 9 個，桌面版 3 × 3
-- 超過 9 個商品自動產生分頁
-- 商品種類篩選後仍維持每頁最多 9 個
-- 購物車改成橫向長條清單排列
-
-
-## 6 位數登入驗證碼
-
-登入頁新增 6 位純數字驗證碼：
-
-- 每次開啟 `/login-page` 都會隨機產生 100000～999999 的 6 位數驗證碼
-- 驗證碼儲存在 `HttpSession`
-- 登入時需同時驗證：
-  1. 帳號
-  2. 密碼
-  3. 6 位數驗證碼
-- 驗證碼輸入錯誤會拒絕登入並重新產生新的驗證碼
-- 驗證碼送出後立即從 Session 移除，避免重複使用
-- 可按「重新產生」取得新的驗證碼
-- 前端限制只能輸入 6 位數格式
-
-
-## 包包分類展示
-
-「包包」分類預設提供 9 個商品，選擇包包分類時可剛好顯示完整 3 × 3：
-
-1. 城市後背包
-2. 輕量旅行背包
-3. 商務電腦後背包
-4. 防潑水機能背包
-5. 簡約休閒後背包
-6. 大容量登山背包
-7. 復古帆布後背包
-8. 日系小型後背包
-9. 多功能運動背包
-
-程式會用商品名稱檢查是否已存在，因此即使你已經使用舊資料庫，重新啟動專案時也會自動補上缺少的背包商品，不需要刪除原本資料庫。
-
-
-## 四大商品分類各 9 個
-
-預設資料調整為：
-- 衣服：9 個
-- 鞋子：9 個
-- 帽子：9 個
-- 包包：9 個
-
-每個分類都能完整展示一頁 3 × 3。
-另外會自動修正「基本款 T-shirt」等預設商品舊資料若為未分類的情況。
-
-
-## 登記商品 / 移除商品
-
-新增獨立的商品後台功能：
-
-- `/admin/products/register`：登記商品
-  - 商品名稱
-  - 價格
-  - 商品種類
-  - 圖片網址 / 靜態圖片路徑
-  - 商品連結
-  - 商品介紹
-- `/admin/products/remove`：移除商品
-  - 顯示現有商品清單
-  - 顯示圖片、名稱、分類、價格
-  - 按「移除商品」會要求再次確認
-- 兩個功能都需要先登入才能使用。
-
-
-## 訂單商品彙總
-
-「我的訂單」現在會直接顯示：
-- 每筆訂單有哪些商品
-- 每項商品的單價
-- 每項商品的數量
-- 每項商品小計
-- 商品種類數
-- 商品總數量
-- 訂單總金額
-
-例如：
-T-shirt × 2 = NT$ 1,198
-休閒鞋 × 1 = NT$ 1,299
-商品總數量 = 3 件
-訂單總金額 = NT$ 2,497
+1. 使用 Spring Boot 建立網站與 REST API。
+2. 理解 Controller、Service、Repository / DAO 的職責分工。
+3. 以 MyBatis Mapper XML 管理 SQL，並練習 JPA 資料存取。
+4. 使用 React `fetch()` 與後端交換 JSON。
+5. 使用 MySQL 處理會員、商品、購物車與訂單資料。
+6. 使用 JasperReports 產生 PDF 報表。
+7. 使用 Git / GitHub 進行版本管理與作品分享。
+
+## 後續改善方向
+
+- 增加自動化單元測試與 API 測試。
+- 將測試帳號初始化限制在開發環境。
+- 完善輸入驗證、錯誤處理及角色權限。
+- 加入 Docker 與雲端部署流程。
+- 補上操作截圖、資料庫 ER 圖及 API 文件。
+
+## 聲明
+
+本專案為個人學習與技術展示用途，不提供正式交易服務。範例帳號、商品與資料僅供測試；請勿在公開儲存庫中提交真實密碼、Token 或個人資料。
