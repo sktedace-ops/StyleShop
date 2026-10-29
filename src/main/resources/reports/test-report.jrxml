@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport name="StyleShopTestReport" language="java"
+              pageWidth="595" pageHeight="842" columnWidth="515"
+              leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40"
+              uuid="2784cfe5-aad7-47d4-aca9-29c773917739">
+
+    <parameter name="REPORT_TITLE" class="java.lang.String"/>
+    <parameter name="GENERATED_AT" class="java.lang.String"/>
+    <parameter name="ARCHITECTURE" class="java.lang.String"/>
+    <parameter name="STATUS_TEXT" class="java.lang.String"/>
+    <parameter name="NOTE_TEXT" class="java.lang.String"/>
+
+    <title height="120">
+        <element kind="rectangle" uuid="18fc4303-4aa6-43f5-b8c4-2c2e86c609a9" x="0" y="0" width="515" height="105" backcolor="#F3F4F6" mode="Opaque">
+            <pen lineWidth="0.5" lineColor="#D1D5DB"/>
+        </element>
+        <element kind="staticText" uuid="cec4e829-264c-4c17-b7de-706f4b330988" x="20" y="18" width="160" height="22" fontSize="12.0" bold="true" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <text><![CDATA[StyleShop Report Center]]></text>
+        </element>
+        <element kind="textField" uuid="850fcde0-aa0b-4ebb-83f3-a48f93269a19" x="20" y="48" width="475" height="32" fontSize="20.0" bold="true" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <expression><![CDATA[$P{REPORT_TITLE}]]></expression>
+        </element>
+    </title>
+
+    <detail>
+        <band height="260">
+            <element kind="staticText" uuid="46892729-b662-4823-86dd-510c96915eca" x="0" y="10" width="130" height="20" bold="true" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false"><text><![CDATA[Generated At]]></text></element>
+            <element kind="textField" uuid="498b5c61-58ff-4885-a16b-338996848243" x="150" y="10" width="365" height="20" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false"><expression><![CDATA[$P{GENERATED_AT}]]></expression></element>
+            <element kind="staticText" uuid="85a5b54d-54e6-4926-953f-50d558da5bf6" x="0" y="50" width="130" height="20" bold="true" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false"><text><![CDATA[Architecture]]></text></element>
+            <element kind="textField" uuid="1831bd85-502f-482c-9215-6eae804dd8e5" x="150" y="50" width="365" height="40" vTextAlign="Middle" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false"><expression><![CDATA[$P{ARCHITECTURE}]]></expression></element>
+            <element kind="staticText" uuid="cb091daf-fc8c-4a16-b381-97a8e9cdb1d4" x="0" y="110" width="130" height="20" bold="true" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false"><text><![CDATA[Status]]></text></element>
+            <element kind="textField" uuid="1fc603da-3d70-4048-b6f6-d46478b5d665" x="150" y="110" width="365" height="20" forecolor="#166534" bold="true" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false"><expression><![CDATA[$P{STATUS_TEXT}]]></expression></element>
+            <element kind="line" uuid="36bc456e-ae1e-435e-8650-77a6b2be0853" x="0" y="155" width="515" height="1" forecolor="#D1D5DB"/>
+            <element kind="staticText" uuid="aec003ea-3372-4c4e-a65e-254054a6ae97" x="0" y="180" width="130" height="20" bold="true" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false"><text><![CDATA[Note]]></text></element>
+            <element kind="textField" uuid="1dde93d6-ab8e-4edb-a129-b730bcab4c8a" x="150" y="180" width="365" height="45" textAdjust="StretchHeight" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false"><expression><![CDATA[$P{NOTE_TEXT}]]></expression></element>
+        </band>
+    </detail>
+
+    <pageFooter height="25">
+        <element kind="textField" uuid="d414cb94-1a1f-481e-bb1c-bac94421aa91" x="415" y="5" width="100" height="15" fontSize="9.0" hTextAlign="Right" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <expression><![CDATA["Page " + $V{PAGE_NUMBER}]]></expression>
+        </element>
+    </pageFooter>
+</jasperReport>

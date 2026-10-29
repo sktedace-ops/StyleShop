@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>我的訂單</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>我的訂單</h1>
+    <div>
+        <a href="/" class="header-link">商品首頁</a>
+        <a href="/cart" class="header-link">購物車</a>
+        <a href="/logout" class="header-link">登出</a>
+    </div>
+</header>
+
+<main class="orders-main">
+
+    <div th:if="${#lists.isEmpty(orders)}" class="empty-cart">
+        <h2>目前沒有訂單</h2>
+        <p>建立第一筆訂單後，就會顯示在這裡。</p>
+        <a href="/" class="product-link">開始購物</a>
+    </div>
+
+    <div class="order-list" th:unless="${#lists.isEmpty(orders)}">
+        <div class="order-summary-card" th:each="order : ${orders}">
+
+            <div class="order-summary-top">
+                <div>
+                    <h2>
+                        訂單 #<span th:text="${order.id}">1</span>
+                    </h2>
+
+                    <p>
+                        建立時間：
+                        <span th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}">
+                            2026/09/07 15:00
+                        </span>
+                    </p>
+
+                    <p>
+                        狀態：
+                        <strong th:text="${order.status}">訂單成立</strong>
+                    </p>
+                </div>
+
+                <a th:href="@{/orders/{id}(id=${order.id})}"
+                   class="product-link">
+                    查看明細
+                </a>
+            </div>
+
+            <div class="order-summary-items">
+                <div class="order-summary-item" th:each="item : ${order.items}">
+                    <img th:src="${item.imageUrl != null && !item.imageUrl.isBlank() ? item.imageUrl : '/images/no-image.svg'}"
+                         th:alt="${item.productName}"
+                         class="order-summary-thumb">
+
+                    <div class="order-summary-item-info">
+                        <strong th:text="${item.productName}">商品名稱</strong>
+
+                        <span>
+                            單價：NT$
+                            <span th:text="${item.price}">0</span>
+                        </span>
+
+                        <span>
+                            數量：
+                            <strong th:text="${item.quantity}">1</strong>
+                        </span>
+                    </div>
+
+                    <div class="order-summary-subtotal">
+                        小計：NT$
+                        <strong th:text="${item.subtotal}">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-summary-bottom">
+                <div>
+                    商品種類數：
+                    <strong th:text="${#lists.size(order.items)}">0</strong>
+                    種
+                </div>
+
+                <div>
+                    商品總數量：
+                    <strong th:text="${#aggregates.sum(order.items.![quantity])}">0</strong>
+                    件
+                </div>
+
+                <div class="order-summary-total">
+                    訂單總金額：
+                    <strong>
+                        NT$ <span th:text="${order.totalAmount}">0</span>
+                    </strong>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

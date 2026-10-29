@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport name="login_history_report"
+              language="java"
+              pageWidth="595" pageHeight="842"
+              columnWidth="515" leftMargin="40" rightMargin="40"
+              topMargin="35" bottomMargin="35"
+              whenNoDataType="AllSectionsNoDetail"
+              uuid="8e50de99-436f-4ee6-8076-45376f0fc108">
+
+    <parameter name="REPORT_TITLE" class="java.lang.String"/>
+    <parameter name="GENERATED_AT" class="java.lang.String"/>
+    <parameter name="TOTAL_COUNT" class="java.lang.Integer"/>
+
+    <field name="id" class="java.lang.Long"/>
+    <field name="username" class="java.lang.String"/>
+    <field name="loginTime" class="java.time.LocalDateTime"/>
+    <field name="resultText" class="java.lang.String"/>
+
+    <title height="72">
+        <element kind="textField" uuid="1eb72403-986a-4b5a-9520-2096d01b1159" x="0" y="10" width="515" height="30"
+                 fontName="SansSerif" fontSize="18.0" bold="true"
+                 hTextAlign="Center" vTextAlign="Middle" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <expression><![CDATA[$P{REPORT_TITLE}]]></expression>
+        </element>
+        <element kind="textField" uuid="69b86d87-a806-4e31-9e25-67b38b8aa3a5" x="0" y="45" width="515" height="16"
+                 fontName="SansSerif" fontSize="9.0" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <expression><![CDATA["產生時間：" + $P{GENERATED_AT} + "    共 " + $P{TOTAL_COUNT} + " 筆"]]></expression>
+        </element>
+    </title>
+
+    <columnHeader height="38">
+        <element kind="staticText" uuid="3d3af7a5-0d17-41e0-a0b6-ec5bb508e438" x="10" y="10" width="70" height="20" fontName="SansSerif" fontSize="11.0" bold="true" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <text><![CDATA[編號]]></text>
+        </element>
+        <element kind="staticText" uuid="8955637d-528d-40ab-b3cb-6be90f0a5dc3" x="90" y="10" width="120" height="20" fontName="SansSerif" fontSize="11.0" bold="true" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <text><![CDATA[登入帳號]]></text>
+        </element>
+        <element kind="staticText" uuid="7494573e-e107-4caf-8b06-b79b1c0afb3f" x="220" y="10" width="175" height="20" fontName="SansSerif" fontSize="11.0" bold="true" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <text><![CDATA[登入時間]]></text>
+        </element>
+        <element kind="staticText" uuid="db067e3e-ebef-4944-a671-c573b9eeff00" x="405" y="10" width="100" height="20" fontName="SansSerif" fontSize="11.0" bold="true" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <text><![CDATA[登入結果]]></text>
+        </element>
+    </columnHeader>
+
+    <detail>
+        <band height="34">
+            <element kind="textField" uuid="076ae0b8-510e-4c70-be09-2bf7d4538639" x="10" y="7" width="70" height="20" fontName="SansSerif" fontSize="10.0" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+                <expression><![CDATA[$F{id}]]></expression>
+            </element>
+            <element kind="textField" uuid="0ecb2076-4bd7-471d-98e7-9082e9f9784b" x="90" y="7" width="120" height="20" fontName="SansSerif" fontSize="10.0" hTextAlign="Center" blankWhenNull="true" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+                <expression><![CDATA[$F{username}]]></expression>
+            </element>
+            <element kind="textField" uuid="05f4f121-5851-4098-931c-f5f38bbf5316" x="220" y="7" width="175" height="20" fontName="SansSerif" fontSize="10.0" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+                <expression><![CDATA[$F{loginTime} == null ? "" : $F{loginTime}.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))]]></expression>
+            </element>
+            <element kind="textField" uuid="478d8a52-893f-4f4c-849f-3dae62dd938d" x="405" y="7" width="100" height="20" fontName="SansSerif" fontSize="10.0" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+                <expression><![CDATA[$F{resultText}]]></expression>
+            </element>
+        </band>
+    </detail>
+
+    <pageFooter height="25">
+        <element kind="textField" uuid="5edf5599-0ff5-423d-98fd-55b2cd692d07" x="0" y="5" width="515" height="15" fontName="SansSerif" fontSize="8.0" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <expression><![CDATA["StyleShop - Page " + $V{PAGE_NUMBER}]]></expression>
+        </element>
+    </pageFooter>
+
+    <noData height="100">
+        <element kind="staticText" uuid="b4602b82-4df8-47a7-b202-10148beed6f6" x="0" y="28" width="515" height="30" fontName="SansSerif" fontSize="12.0" hTextAlign="Center" pdfFontName="MSung-Light" pdfEncoding="UniCNS-UCS2-H" pdfEmbedded="false">
+            <text><![CDATA[目前沒有登入紀錄]]></text>
+        </element>
+    </noData>
+</jasperReport>

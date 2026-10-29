@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>我的購物車</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>我的購物車</h1>
+    <div>
+        <a href="/" class="header-link">繼續購物</a>
+        <a href="/orders" class="header-link">查看訂單</a>
+        <a href="/logout" class="header-link">登出</a>
+    </div>
+</header>
+
+<main class="cart-main">
+
+    <div th:if="${#lists.isEmpty(cartItems)}" class="empty-cart">
+        <h2>購物車目前是空的</h2>
+        <p>回商品頁挑選喜歡的商品吧。</p>
+        <a href="/" class="product-link">回商品清單</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cartItems)}">
+        <div class="cart-summary">
+            購物車商品數：
+            <strong th:text="${totalQuantity}">0</strong>
+        </div>
+
+        <div class="cart-list">
+            <div class="cart-row" th:each="item : ${cartItems}">
+                <img th:src="${item.product.imageUrl}"
+                     th:alt="${item.product.name}"
+                     class="cart-row-image">
+
+                <div class="cart-row-main">
+                    <h2 th:text="${item.product.name}">商品名稱</h2>
+                    <div class="category-badge"
+                         th:text="${item.product.category != null ? item.product.category.name : '未分類'}">
+                    </div>
+
+                    <p>
+                        單價：NT$
+                        <span th:text="${item.product.price}">0</span>
+                    </p>
+
+                    <p class="cart-subtotal">
+                        小計：NT$
+                        <span th:text="${item.product.price * item.quantity}">0</span>
+                    </p>
+                </div>
+
+                <div class="cart-row-actions">
+                    <div class="quantity-area">
+                        <form th:action="@{/cart/decrease/{id}(id=${item.id})}" method="post">
+                            <button type="submit" class="quantity-button">−</button>
+                        </form>
+
+                        <strong th:text="${item.quantity}">1</strong>
+
+                        <form th:action="@{/cart/increase/{id}(id=${item.id})}" method="post">
+                            <button type="submit" class="quantity-button">＋</button>
+                        </form>
+                    </div>
+
+                    <form th:action="@{/cart/remove/{id}(id=${item.id})}"
+                          method="post"
+                          onsubmit="return confirm('確定要從購物車刪除這個商品嗎？');">
+                        <button type="submit" class="delete-button">刪除</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-checkout-box">
+            <div class="cart-total">
+                總金額：
+                <strong>
+                    NT$ <span th:text="${total}">0</span>
+                </strong>
+            </div>
+
+            <form action="/orders/checkout"
+                  method="post"
+                  onsubmit="return confirm('確定要建立這筆訂單嗎？');">
+                <button type="submit" class="checkout-button">
+                    建立訂單
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

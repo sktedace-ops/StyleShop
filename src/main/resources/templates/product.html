@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>商品詳細資料</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>商品詳細資料</h1>
+    <div>
+        <a href="/" class="header-link">商品清單</a>
+        <a href="/cart" class="header-link">購物車</a>
+        <a href="/logout" class="header-link">登出</a>
+    </div>
+</header>
+
+<main>
+    <div class="product-detail">
+        <img
+            th:src="${product.imageUrl}"
+            th:alt="${product.name}"
+            class="product-detail-image"
+        >
+
+        <div class="product-detail-info">
+            <div class="category-badge"
+                 th:text="${product.category != null ? product.category.name : '未分類'}">
+                商品種類
+            </div>
+
+            <h2 th:text="${product.name}">商品名稱</h2>
+
+            <p class="price">
+                NT$
+                <span th:text="${product.price}">0</span>
+            </p>
+
+            <h3>商品介紹</h3>
+            <p class="product-description"
+               th:text="${product.description}">
+                商品詳細介紹
+            </p>
+
+            <form th:action="@{/cart/add/{id}(id=${product.id})}"
+                  method="post"
+                  class="add-cart-form">
+                <button type="submit" class="cart-button">
+                    加入購物車
+                </button>
+            </form>
+
+            <a
+                th:if="${product.productUrl != null and !#strings.isEmpty(product.productUrl)}"
+                th:href="${product.productUrl}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="product-link"
+            >
+                前往商品連結
+            </a>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

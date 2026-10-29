@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>訂單明細</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>訂單明細</h1>
+    <div>
+        <a href="/orders" class="header-link">我的訂單</a>
+        <a href="/" class="header-link">商品首頁</a>
+        <a href="/logout" class="header-link">登出</a>
+    </div>
+</header>
+
+<main class="orders-main">
+
+    <div class="order-detail-header">
+        <h2>
+            訂單 #<span th:text="${order.id}">1</span>
+        </h2>
+
+        <p>
+            建立時間：
+            <span th:text="${#temporals.format(order.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
+        </p>
+
+        <p>
+            訂單狀態：
+            <strong th:text="${order.status}">訂單成立</strong>
+        </p>
+
+        <p>
+            商品種類：
+            <strong th:text="${#lists.size(order.items)}">0</strong>
+            種
+        </p>
+
+        <p>
+            商品總數量：
+            <strong th:text="${#aggregates.sum(order.items.![quantity])}">0</strong>
+            件
+        </p>
+    </div>
+
+    <div class="order-items">
+        <div class="order-item-row" th:each="item : ${order.items}">
+            <img th:src="${item.imageUrl != null && !item.imageUrl.isBlank() ? item.imageUrl : '/images/no-image.svg'}"
+                 th:alt="${item.productName}"
+                 class="order-item-image">
+
+            <div class="order-item-info">
+                <h3 th:text="${item.productName}">商品名稱</h3>
+
+                <p>
+                    單價：NT$
+                    <span th:text="${item.price}">0</span>
+                </p>
+
+                <p>
+                    數量：
+                    <strong th:text="${item.quantity}">1</strong>
+                    件
+                </p>
+            </div>
+
+            <div class="order-item-subtotal">
+                小計：NT$
+                <strong th:text="${item.subtotal}">0</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-grand-total">
+        訂單總金額：
+        <strong>
+            NT$ <span th:text="${order.totalAmount}">0</span>
+        </strong>
+    </div>
+
+</main>
+
+</body>
+</html>

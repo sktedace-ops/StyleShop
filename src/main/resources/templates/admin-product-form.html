@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">商品編輯</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1 th:text="${pageTitle}">商品編輯</h1>
+    <div>
+        <a href="/admin/products" class="header-link">回商品管理</a>
+        <a href="/admin/products/remove" class="header-link">移除商品</a>
+        <a href="/admin/categories" class="header-link">種類管理</a>
+    </div>
+</header>
+
+<main class="admin-main">
+    <form action="/admin/products/save" method="post" class="admin-form">
+        <input type="hidden" name="id" th:value="${product.id}">
+
+        <label>商品名稱</label>
+        <input type="text" name="name" th:value="${product.name}" required>
+
+        <label>價格</label>
+        <input type="number" name="price" min="0" th:value="${product.price}" required>
+
+        <label>商品種類</label>
+        <select name="categoryId">
+            <option value="">未分類</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category.id}"
+                    th:text="${category.name}"
+                    th:selected="${product.category != null and product.category.id == category.id}">
+            </option>
+        </select>
+
+        <label>圖片網址 / 靜態圖片路徑</label>
+        <input type="text" name="imageUrl"
+               th:value="${product.imageUrl}"
+               placeholder="/images/xxx.svg 或 https://...">
+
+        <label>商品連結</label>
+        <input type="text" name="productUrl"
+               th:value="${product.productUrl}"
+               placeholder="https://...">
+
+        <label>商品介紹</label>
+        <textarea name="description" rows="7"
+                  th:text="${product.description}"
+                  placeholder="輸入商品詳細介紹"></textarea>
+
+        <button type="submit" class="admin-button">儲存商品</button>
+    </form>
+</main>
+
+</body>
+</html>

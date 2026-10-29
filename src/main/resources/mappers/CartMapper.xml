@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.vscodeshop.mapper.CartMapper">
+    <resultMap id="CartItemResultMap" type="com.example.vscodeshop.model.CartItem">
+        <id property="id" column="cart_id"/>
+        <result property="username" column="username"/>
+        <result property="quantity" column="quantity"/>
+        <association property="product" javaType="com.example.vscodeshop.model.Product">
+            <id property="id" column="product_id"/>
+            <result property="name" column="product_name"/>
+            <result property="price" column="product_price"/>
+            <result property="imageUrl" column="product_image_url"/>
+            <result property="productUrl" column="product_url"/>
+            <result property="description" column="product_description"/>
+            <association property="category" javaType="com.example.vscodeshop.model.Category">
+                <id property="id" column="category_id"/>
+                <result property="name" column="category_name"/>
+            </association>
+        </association>
+    </resultMap>
+
+    <sql id="cartSelect">
+        SELECT ci.id AS cart_id, ci.username, ci.quantity,
+               p.id AS product_id, p.name AS product_name, p.price AS product_price,
+               p.image_url AS product_image_url, p.product_url, p.description AS product_description,
+               c.id AS category_id, c.name AS category_name
+        FROM cart_items ci
+        JOIN products p ON p.id = ci.product_id
+        LEFT JOIN categories c ON c.id = p.category_id
+    </sql>
+
+    <select id="findByUsername" resultMap="CartItemResultMap">
+        <include refid="cartSelect"/>
+        WHERE ci.username = #{username}
+        ORDER BY ci.id DESC
+    </select>
+
+    <select id="findById" resultMap="CartItemResultMap">
+        <include refid="cartSelect"/>
+        WHERE ci.id = #{id}
+    </select>
+
+    <select id="findByUsernameAndProductId" resultMap="CartItemResultMap">
+        <include refid="cartSelect"/>
+        WHERE ci.username = #{username} AND ci.product_id = #{productId}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="com.example.vscodeshop.model.CartItem"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO cart_items (username, product_id, quantity)
+        VALUES (#{username}, #{product.id}, #{quantity})
+    </insert>
+
+    <update id="updateQuantity">
+        UPDATE cart_items SET quantity = #{quantity} WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByIdAndUsername">
+        DELETE FROM cart_items WHERE id = #{id} AND username = #{username}
+    </delete>
+
+    <delete id="deleteByUsername">
+        DELETE FROM cart_items WHERE username = #{username}
+    </delete>
+</mapper>

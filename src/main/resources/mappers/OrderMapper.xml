@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.vscodeshop.mapper.OrderMapper">
+    <resultMap id="OrderResultMap" type="com.example.vscodeshop.model.Order">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <resultMap id="OrderItemResultMap" type="com.example.vscodeshop.model.OrderItem">
+        <id property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="price" column="price"/>
+        <result property="quantity" column="quantity"/>
+        <result property="subtotal" column="subtotal"/>
+    </resultMap>
+
+    <select id="findByUsername" resultMap="OrderResultMap">
+        SELECT id, username, created_at, total_amount, status
+        FROM orders
+        WHERE username = #{username}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findByIdAndUsername" resultMap="OrderResultMap">
+        SELECT id, username, created_at, total_amount, status
+        FROM orders
+        WHERE id = #{id} AND username = #{username}
+        LIMIT 1
+    </select>
+
+    <select id="findItemsByOrderId" resultMap="OrderItemResultMap">
+        SELECT id, product_id, product_name, image_url, price, quantity, subtotal
+        FROM order_items
+        WHERE order_id = #{orderId}
+        ORDER BY id
+    </select>
+
+    <insert id="insertOrder" parameterType="com.example.vscodeshop.model.Order"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO orders (username, created_at, total_amount, status)
+        VALUES (#{username}, #{createdAt}, #{totalAmount}, #{status})
+    </insert>
+
+    <insert id="insertOrderItem" parameterType="com.example.vscodeshop.model.OrderItem"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO order_items
+            (order_id, product_id, product_name, image_url, price, quantity, subtotal)
+        VALUES
+            (#{order.id}, #{productId}, #{productName}, #{imageUrl}, #{price}, #{quantity}, #{subtotal})
+    </insert>
+    <update id="cancelOrder">
+        UPDATE orders
+        SET status = '已取消'
+        WHERE id = #{id}
+          AND username = #{username}
+          AND status = '訂單成立'
+    </update>
+</mapper>

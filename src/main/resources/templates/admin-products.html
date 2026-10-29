@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>商品管理</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>商品管理</h1>
+    <div>
+        <a href="/" class="header-link">回商品首頁</a>
+        <a href="/admin/products/register" class="header-link">登記商品</a>
+        <a href="/admin/products/remove" class="header-link">移除商品</a>
+        <a href="/admin/categories" class="header-link">種類管理</a>
+        <a href="/logout" class="header-link">登出</a>
+    </div>
+</header>
+
+<main class="admin-main">
+    <div class="admin-toolbar">
+        <a href="/admin/products/register" class="admin-button">＋ 登記商品</a>
+        <a href="/admin/products/remove" class="delete-button admin-remove-link">－ 移除商品</a>
+        <a href="/api/reports/products.pdf" target="_blank"
+           class="admin-button">📄 商品清單 PDF</a>
+        <a href="/api/reports/login-history.pdf" target="_blank"
+           class="admin-button">🔐 登入紀錄管理</a>
+    </div>
+
+    <div class="table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>圖片</th>
+                <th>商品名稱</th>
+                <th>種類</th>
+                <th>價格</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.id}"></td>
+                <td>
+                    <img th:src="${product.imageUrl}" class="admin-thumb">
+                </td>
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.category != null ? product.category.name : '未分類'}"></td>
+                <td>
+                    NT$ <span th:text="${product.price}"></span>
+                </td>
+                <td class="actions">
+                    <a th:href="@{/admin/products/edit/{id}(id=${product.id})}"
+                       class="edit-button">編輯</a>
+
+                    <form th:action="@{/admin/products/delete/{id}(id=${product.id})}"
+                          method="post"
+                          onsubmit="return confirm('確定要刪除這個商品嗎？');">
+                        <button type="submit" class="delete-button">刪除</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+</body>
+</html>

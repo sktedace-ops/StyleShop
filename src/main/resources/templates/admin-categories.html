@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>商品種類管理</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>商品種類管理</h1>
+    <div>
+        <a href="/" class="header-link">回商品首頁</a>
+        <a href="/admin/products" class="header-link">商品管理</a>
+        <a href="/logout" class="header-link">登出</a>
+    </div>
+</header>
+
+<main class="admin-main">
+
+    <form action="/admin/categories/add" method="post" class="category-add-form">
+        <input type="text" name="name" placeholder="例如：帽子、鞋子、衣服" required>
+        <button type="submit" class="admin-button">＋ 新增種類</button>
+    </form>
+
+    <div class="category-manage-list">
+        <div class="category-manage-row" th:each="category : ${categories}">
+            <form th:action="@{/admin/categories/update/{id}(id=${category.id})}"
+                  method="post"
+                  class="category-edit-form">
+                <input type="text" name="name" th:value="${category.name}" required>
+                <button type="submit" class="edit-button">修改</button>
+            </form>
+
+            <form th:action="@{/admin/categories/delete/{id}(id=${category.id})}"
+                  method="post"
+                  onsubmit="return confirm('確定要刪除這個種類嗎？如果種類仍有商品，系統不會刪除。');">
+                <button type="submit" class="delete-button">刪除</button>
+            </form>
+        </div>
+    </div>
+
+    <p class="admin-note">
+        注意：如果某個種類仍有商品使用中，系統會保留該種類，不會直接刪除。
+    </p>
+</main>
+
+</body>
+</html>

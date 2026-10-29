@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>會員登入</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="login-box">
+    <h1>會員登入</h1>
+
+    <div id="loginMessage"></div>
+
+    <form action="/login" method="post">
+
+        <label>帳號</label>
+        <input
+            type="text"
+            name="username"
+            autocomplete="username"
+            required>
+
+        <label>密碼</label>
+        <input
+            type="password"
+            name="password"
+            autocomplete="current-password"
+            required>
+
+        <label>驗證碼</label>
+
+        <div class="captcha-area">
+            <div class="captcha-code"
+                 th:text="${captcha}">
+                123456
+            </div>
+
+            <a href="/captcha/refresh"
+               class="captcha-refresh">
+                重新產生
+            </a>
+        </div>
+
+        <input
+            type="text"
+            name="captchaInput"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            maxlength="6"
+            minlength="6"
+            placeholder="請輸入上方 6 位數驗證碼"
+            required>
+
+        <button type="submit">登入</button>
+    </form>
+<p><a href="/">← 回商品清單</a></p>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const message = document.getElementById("loginMessage");
+
+if (params.get("required") === "1") {
+    message.innerHTML =
+        '<div class="login-warning">商品詳細內容與介紹需要登入後才能查看。</div>';
+}
+
+if (params.get("admin") === "1") {
+    message.innerHTML =
+        '<div class="login-warning">商品與種類管理功能需要先登入。</div>';
+}
+
+if (params.get("cart") === "1") {
+    message.innerHTML =
+        '<div class="login-warning">購物車功能需要登入會員後才能使用。</div>';
+}
+
+if (params.get("order") === "1") {
+    message.innerHTML =
+        '<div class="login-warning">查看訂單與建立訂單需要先登入會員。</div>';
+}
+
+if (params.get("captchaError") === "1") {
+    message.innerHTML =
+        '<div class="login-error">驗證碼錯誤，系統已重新產生新的 6 位數驗證碼。</div>';
+}
+
+if (params.get("error") === "1") {
+    message.innerHTML =
+        '<div class="login-error">帳號或密碼錯誤，請重新輸入。</div>';
+}
+</script>
+
+</body>
+</html>

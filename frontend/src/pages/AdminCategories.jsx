@@ -1,0 +1,7 @@
+import {useEffect,useState} from "react";import {useNavigate} from "react-router-dom";import {request} from "../api";
+import PageActions from "../components/PageActions";
+export default function AdminCategories(){const nav=useNavigate(),[cats,setCats]=useState([]),[name,setName]=useState(""),[msg,setMsg]=useState("");const load=()=>request("/api/categories").then(setCats);useEffect(()=>{request("/api/auth/me").then(a=>a.loggedIn?load():nav("/login"))},[]);
+ async function add(e){e.preventDefault();try{await request("/api/admin/categories",{method:"POST",body:JSON.stringify({name})});setName("");load()}catch(e){setMsg(e.message)}}
+ async function rename(c){const n=prompt("新的種類名稱",c.name);if(!n)return;try{await request(`/api/admin/categories/${c.id}`,{method:"PUT",body:JSON.stringify({name:n})});load()}catch(e){setMsg(e.message)}}
+ async function del(c){if(!confirm(`確定刪除「${c.name}」？`))return;try{await request(`/api/admin/categories/${c.id}`,{method:"DELETE"});load()}catch(e){setMsg(e.message)}}
+ return <main className="narrow"><PageActions/><h1>種類管理</h1>{msg&&<p className="error">{msg}</p>}<form className="panel row" onSubmit={add}><input placeholder="新增種類名稱" value={name} onChange={e=>setName(e.target.value)}/><button className="primary">新增</button></form><div className="panel">{cats.map(c=><div className="categoryrow" key={c.id}><b>{c.name}</b><span><button onClick={()=>rename(c)}>修改</button><button onClick={()=>del(c)}>刪除</button></span></div>)}</div></main>}

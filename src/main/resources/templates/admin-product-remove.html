@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>移除商品</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>移除商品</h1>
+    <div>
+        <a href="/admin/products" class="header-link">商品管理</a>
+        <a href="/admin/products/register" class="header-link">登記商品</a>
+        <a href="/" class="header-link">商品首頁</a>
+        <a href="/logout" class="header-link">登出</a>
+    </div>
+</header>
+
+<main class="admin-main">
+
+    <div class="notice">
+        請選擇要移除的商品。按下「移除商品」後會再次要求確認。
+    </div>
+
+    <div class="remove-product-list">
+        <div class="remove-product-row" th:each="product : ${products}">
+            <img th:src="${product.imageUrl != null && !product.imageUrl.isBlank() ? product.imageUrl : '/images/no-image.svg'}"
+                 th:alt="${product.name}"
+                 class="admin-thumb">
+
+            <div class="remove-product-info">
+                <strong th:text="${product.name}">商品名稱</strong>
+                <span th:text="${product.category != null ? product.category.name : '未分類'}">分類</span>
+                <span>
+                    NT$ <span th:text="${product.price}">0</span>
+                </span>
+            </div>
+
+            <form th:action="@{/admin/products/delete/{id}(id=${product.id})}"
+                  method="post"
+                  onsubmit="return confirm('確定要移除「' + this.dataset.name + '」嗎？');"
+                  th:attr="data-name=${product.name}">
+                <button type="submit" class="delete-button">移除商品</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(products)}" class="empty-cart">
+        <h2>目前沒有商品可以移除</h2>
+    </div>
+
+</main>
+</body>
+</html>
